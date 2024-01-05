@@ -16,7 +16,7 @@ if test -n "$ngx_module_link"; then
     ngx_module_incs=""
     . auto/module
 else
-	HTTP_MODULES="$HTTP_MODULES ngx_http_image_transform_module"
+	HTTP_MODULES="$HTTP_MODULES ngx_http_passthru_module"
 	NGX_ADDON_SRCS="$NGX_ADDON_SRCS $HTTP_PASSTHRU_MODULE_SRC"
 	NGX_ADDON_DEPS="$NGX_ADDON_DEPS $HTTP_PASSTHRU_MODULE_DEPS"
 fi
