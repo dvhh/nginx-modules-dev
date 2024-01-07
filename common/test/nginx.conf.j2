@@ -1,0 +1,46 @@
+worker_processes 1;
+pid {{PWD}}/pid;
+daemon on;
+error_log /dev/stderr warn;
+
+load_module {{MODULE}}/build/{{MODULE_NAME}}.so;
+
+events {
+	worker_connections 768;
+}
+
+http {
+
+	sendfile on;
+	tcp_nopush on;
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+
+	access_log /dev/stdout;
+
+	server {
+		listen 5001;
+		
+		root {{MODULE}}/test/html;
+
+		location / {
+			try_files $uri $uri/ =404;
+		}
+
+	}
+
+	server {
+		listen 5000;
+		root {{MODULE}}/test/html;
+		server_name _;
+
+		location / {
+			try_files $uri $uri/ =404;
+		}
+
+		location /proxy/ {
+			rewrite ^/proxy/(.*)$ /$1 break;
+			proxy_pass http://localhost:5001;
+		}
+	}
+}

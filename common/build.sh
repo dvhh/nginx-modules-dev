@@ -6,7 +6,7 @@ readonly BIN="$(dirname "$(readlink -f "$0")")"
 readonly TARGET="${PWD}/build"
 readonly SRC="/var/tmp/nginx-src"
 readonly MODULE="${PWD}"
-readonly MODULE_NAME="$(grep "ngx_addon_name=" config|sed 's/ngx_addon_name=//')"
+readonly MODULE_NAME="$(grep "ngx_addon_name=" ${MODULE}/config|sed 's/ngx_addon_name=//')"
 
 mkdir -p "${TARGET}"
 cp -r /usr/share/nginx/src/ "${SRC}"
