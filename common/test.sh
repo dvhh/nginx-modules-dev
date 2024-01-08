@@ -24,9 +24,8 @@ function fail() {
 # test/nginx.conf.j2
 export MODULE
 export MODULE_NAME
-env
-# exit
-j2 -f env "${BIN}/test/nginx.conf.j2" > "${MODULE}/test/nginx.conf"
+
+j2 -f env "${MODULE}/test/nginx.conf.j2" > "${MODULE}/test/nginx.conf"
 
 /usr/sbin/nginx -t -c "${MODULE}/test/nginx.conf"
 

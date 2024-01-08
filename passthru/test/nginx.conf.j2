@@ -3,7 +3,7 @@ pid {{PWD}}/pid;
 daemon on;
 error_log /dev/stderr warn;
 
-load_module {{PWD}}/build/ngx_http_passthru_module.so;
+load_module {{MODULE}}/build/{{MODULE_NAME}}.so;
 
 events {
 	worker_connections 768;
@@ -21,7 +21,7 @@ http {
 	server {
 		listen 5001;
 		
-		root {{PWD}}/test/html;
+		root {{MODULE}}/test/html;
 
 		location / {
 			try_files $uri $uri/ =404;
@@ -31,7 +31,7 @@ http {
 
 	server {
 		listen 5000;
-		root {{PWD}}/test/html;
+		root {{MODULE}}/test/html;
 		server_name _;
 
 		location / {
