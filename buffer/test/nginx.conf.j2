@@ -43,6 +43,7 @@ http {
             proxy_buffering off;
 			rewrite ^/proxy/(.*)$ /$1 break;
 			proxy_pass http://localhost:5001;
+            buffer_response on;
 		}
 	}
 }

@@ -103,4 +103,6 @@ ngx_module_t  ngx_http_buffer_module = {
     NGX_MODULE_V1_PADDING
 };
 
+#define BUFFERED 0x08
+
 #endif // _NGX_HTB_H_

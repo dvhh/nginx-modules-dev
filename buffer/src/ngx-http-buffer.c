@@ -121,8 +121,8 @@ body_filter(ngx_http_request_t *request, ngx_chain_t *in)
         return NGX_ERROR;
     };
     // check for last buffer
-    size_t size = 0;
-    for(ngx_chain_t *cl = in; cl != NULL; cl = cl->next) {
+    ssize_t size = 0;
+    for(ngx_chain_t *cl = ctx->buffer_chain; cl != NULL; cl = cl->next) {
         ngx_buf_t *b = cl->buf;
         size_t current = 0;
         if(b->in_file) {
@@ -135,6 +135,12 @@ body_filter(ngx_http_request_t *request, ngx_chain_t *in)
             return send_response(request, ctx);
         }
     }
+    if(request->headers_out.content_length_n != -1) {
+        if(size == request->headers_out.content_length_n) {
+            return send_response(request, ctx);
+        }
+    }
+
     ngx_log_error(
         NGX_LOG_WARN,
         request->connection->log,
@@ -142,13 +148,16 @@ body_filter(ngx_http_request_t *request, ngx_chain_t *in)
         "waiting remain of file %z",
         size
     );
-    return NGX_AGAIN;
+    request->connection->buffered |= BUFFERED;
+    //return NGX_AGAIN;
+    return NGX_OK;
 }
 
 
 static
 ngx_int_t send_response(ngx_http_request_t *request, const context_t *ctx)
 {
+    request->connection->buffered &= ~BUFFERED;
     ngx_log_error(
         NGX_LOG_WARN,
         request->connection->log,
