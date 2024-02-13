@@ -155,8 +155,8 @@ body_filter(ngx_http_request_t *request, ngx_chain_t *in)
             "skip in"
         );
      
-        request->connection->buffered |= BUFFERED;
-        request->buffered |= BUFFERED;
+        request->connection->buffered |= NGX_HTTP_SSI_BUFFERED;
+        request->buffered |= NGX_HTTP_SSI_BUFFERED;
 
         return ngx_http_next_body_filter(request, in);
         //return NGX_OK;
@@ -193,16 +193,17 @@ body_filter(ngx_http_request_t *request, ngx_chain_t *in)
         size_t current = 0;
         if(b->in_file) {
             current = b->file_last - b->file_pos;
+            b->file_pos = b->file_last;
         }else{
             current = b->last - b->pos;
             //set buffer to zero length
-            //b->pos = b->last; 
-            b->last = b->pos;
+            b->pos = b->last; 
+            //b->last = b->pos;
         }
         size += current;
-        ngx_chain_t *old = cl;
+        //ngx_chain_t *old = cl;
         cl = cl->next;
-        ngx_free_chain(request->pool, old);
+        //ngx_free_chain(request->pool, old);
 
         if(b->last_buf) {
             last = true;
@@ -220,7 +221,8 @@ body_filter(ngx_http_request_t *request, ngx_chain_t *in)
         last
     );
     if(last) {
-        request->connection->buffered &= ~BUFFERED;
+        request->connection->buffered &= ~NGX_HTTP_SSI_BUFFERED;
+        request->buffered &= ~NGX_HTTP_SSI_BUFFERED;
         return send_response(request, ctx);
     }
     ngx_log_error(
@@ -230,8 +232,8 @@ body_filter(ngx_http_request_t *request, ngx_chain_t *in)
         "waiting remain of file %z",
         size
     );
-    request->connection->buffered |= BUFFERED;
-    request->buffered |= BUFFERED;
+    request->connection->buffered |= NGX_HTTP_SSI_BUFFERED;
+    request->buffered |= NGX_HTTP_SSI_BUFFERED;
 
     return NGX_OK;
 }
